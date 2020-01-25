@@ -16,6 +16,10 @@
     background: orange;
 }
 
+.lime {
+    background: lime;
+}
+
 .inline-error {
     background-color: black;
     color: red;
