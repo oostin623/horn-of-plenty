@@ -6,6 +6,7 @@ import { FoodDatabasePageComponent } from './food-database/food-database-page/fo
 import { FoodDatabaseSearchComponent } from './food-database/food-database-search/food-database-search.component';
 import { CreateFoodFormComponent } from './food-database/create-food-form/create-food-form.component';
 import { EditFoodFormComponent } from './food-database/edit-food-form/edit-food-form.component';
+import { FoodLogPageComponent } from './food-log-page/food-log-page.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { EditFoodFormComponent } from './food-database/edit-food-form/edit-food-
     FoodDatabaseSearchComponent,
     CreateFoodFormComponent,
     EditFoodFormComponent,
+    FoodLogPageComponent,
   ],
   imports: [
     BrowserModule,
