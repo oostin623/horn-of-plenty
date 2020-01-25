@@ -1,1 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
+
+.content-box {
+    border: 2px solid;
+}
+
+.cyan {
+    background: cyan;
+}
+
+.magenta {
+    background: magenta;
+}
+
+.inline-error {
+    background-color: black;
+    color: red;
+}
