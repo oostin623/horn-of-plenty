@@ -1,0 +1,49 @@
+<h1> Food Log Page </h1>
+
+<div class="content-box lime">
+    <h2> Food log for: {{ logDateValue | date }}</h2>
+    <form [formGroup]="foodLogDay" (ngSubmit)="onSubmit()">    
+        <table formArrayName="eats">
+            <tr>
+              <td>time</td>
+              <td>food</td>
+              <td>amount</td>
+              <td>fat</td>
+              <td>carbs</td>
+              <td>protein</td>
+              <td>calories</td>
+              <td>sugar</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td> totals: </td>
+                <td>{{ totalFat }}</td>
+                <td>{{ totalCarbs }}</td>
+                <td>{{ totalProtein }}</td>
+                <td>{{ totalCalories }}</td>
+                <td>{{ totalSugar }}</td>
+            </tr>
+            <tr *ngFor="let row of eats.controls; let i=index" [formGroupName]=i>
+                <td>{{ row.value.time | date }}</td>
+                <td>
+                    <select  formControlName="food" id="foodOptionSelect">
+                        <option *ngFor="let foodOption of (foodOptions$ | async)" 
+                                [ngValue]="foodOption"
+                                (change)="selectedFoodChange(foodOption, i)">
+                            {{ foodOption.name | json }}
+                        </option>
+                    </select> 
+                </td>
+                <td>{{ row.value.amount }}</td>
+                <td>{{ row.value.food.macros?.f }}</td>
+                <td>{{ row.value.food.macros?.c }}</td>
+                <td>{{ row.value.food.macros?.p }}</td>
+                <td>{{ row.value.food.calories }}</td>
+                <td>{{ row.value.food.sugar }}</td>
+            </tr>
+        </table>
+        <button type="button" (click)="createLogEntry()"> add another entry</button>
+    </form>
+</div>
+

@@ -1,0 +1,10 @@
+<div class="content-box cyan">
+    <h2> Food Search </h2>
+    <label> search
+        <input type="text" [(ngModel)]="foodSearch">
+    </label>
+    <button (click)="submitSearch()"> submit </button>
+    <div *ngFor="let food of searchResults$ | async">
+        {{ food | json }}
+    </div>
+</div>

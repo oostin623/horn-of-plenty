@@ -1,0 +1,37 @@
+<h2> Edit Food Form </h2>
+<form [formGroup]="editFoodForm" (ngSubmit)="onSubmit()">
+
+<!-- name -->
+<label> name: <input type=text formControlName="name"> </label>
+<span *ngIf="name?.pending"> checking results... </span>
+<span *ngIf="submitted && name?.errors?.duplicateFoodName" class="inline-error"> 
+    food name "{{ name.value }}" already exists </span>
+<!-- portion -->
+<label> portion:
+    <input type=text formControlName="portion">
+</label>
+<div formGroupName="macros">
+    <label> macros:
+        <label> f: 
+            <input type=text formControlName="f">
+        </label>
+        <label> c: 
+            <input type=text formControlName="c">
+        </label>
+        <label> p: 
+            <input type=text formControlName="p">
+        </label>
+    </label> 
+</div>
+<label> calories:
+    <input type=text formControlName="calories">
+</label>
+<label> sugar:
+    <input type=text formControlName="sugar">
+</label>
+
+    <button type="submit">Submit</button>
+
+</form>
+
+<button (click)="onCancel()"> cancel </button>

@@ -1,0 +1,24 @@
+<h1> Food Database Page </h1>
+
+<app-food-database-search></app-food-database-search>
+
+<div class="content-box magenta">
+    <button (click)="toggleShowFoodForm()"> {{ showFoodForm ? 'Cancel' : 'Create Food' }} </button>
+    <app-create-food-form *ngIf="showFoodForm"></app-create-food-form>
+</div>
+
+<div class="content-box orange">
+    <h2> All Stored Foods: </h2>
+    <div *ngFor="let food of foods$ | async">
+        {{ food | json }} 
+        <button (click)="editFood(food)" [disabled]="showEditFoodForm"> edit </button> 
+        <button (click)="deleteFood(food)"> delete </button>
+    </div>
+
+    <app-edit-food-form *ngIf="showEditFoodForm"
+        [food]="selectedFood"
+        (close)="toggleShowEditFoodForm()"
+       >
+    </app-edit-food-form>
+</div>
+
