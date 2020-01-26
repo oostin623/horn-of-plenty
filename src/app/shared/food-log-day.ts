@@ -10,7 +10,8 @@ export interface Eat {
     time: Date;
     type: EatType;
     meal: MealType;
-    portion: Portion;
+    food: Food;
+    amount: number;
 }
 export type EatType = ''|'snack'|'meal';
 export type MealType = ''|'breakfast'|'lunch'|'dinner';
