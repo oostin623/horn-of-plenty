@@ -1,0 +1,84 @@
+<h1> Food Log Page </h1>
+<div *ngIf="!!foodLogDayForm" class="content-box lime">
+    <h2> Food log for: {{ logDateValue | date }}</h2>
+    <!-- return to today -->
+    <div *ngIf="selectedDate !== today">
+        <button (click)="navagateToToday()"> back to today </button>
+    </div>
+    <!-- date switcher -->
+    <label> change date: 
+        <input type="date" 
+            [(ngModel)]="selectedDateInput"
+            (change)="changeLogDate()">
+    </label>
+    <!-- food log -->
+    <form [formGroup]="foodLogDay" (ngSubmit)="onSubmit()">    
+        <!-- food log table-->
+        <table *ngIf="!!eats" formArrayName="eats">
+            <!-- table header -->
+            <tr>
+                <td>time</td>
+                <td>food</td>
+                <td>amount</td>
+                <td>calories</td>
+                <td>fat</td>
+                <td>carbs</td>
+                <td>protein</td>
+                <td>sugar</td>
+                <td></td>
+            </tr>
+            <tr *ngFor="let row of eats?.controls; let i=index" [formGroupName]="i">
+                <td>{{ row.value.time | date }}</td>
+                <!-- food selection -->
+                <td><select formControlName="food" [compareWith]="compareFoodOptions">
+                        <option *ngFor="let foodOption of (foodOptions$ | async)" 
+                            [ngValue]="foodOption"
+                        > {{ foodOption.name }} </option>
+                    </select></td>
+                <!-- amount input -->
+                <td><input  type="text" formControlName="amount" maxlength="4" class="amount-input"></td>
+                <!-- display values -->
+                <td><strong>{{ row.value.food?.calories * row.value.amount}}</strong></td>
+                <td>{{ row.value.food?.macros?.f * row.value.amount }}</td>
+                <td>{{ row.value.food?.macros?.c * row.value.amount}}</td>
+                <td>{{ row.value.food?.macros?.p * row.value.amount}}</td>
+                <td>{{ row.value.food?.sugar * row.value.amount}}</td>
+                <td> <button type="button" (click)="deleteLogEntry(i)"> delete </button></td>
+            </tr>
+            <!-- totals -->
+            <tr>
+                <th colspan="3"></th><th colspan="5"> Totals: </th>
+            </tr>
+            <!-- totals header -->
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>calories</td>
+                <td>fat</td>
+                <td>carbs</td>
+                <td>protein</td>
+                <td>sugar</td>
+            </tr>
+            <!-- totals display values -->
+            <tr *ngIf="!!eats"> 
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>{{ totalCalories }}</strong></td>
+                <td>{{ totalFat }}</td>
+                <td>{{ totalCarbs }}</td>
+                <td>{{ totalProtein }}</td>
+                <td>{{ totalSugar }}</td> 
+            </tr>
+        </table>
+        <button type="button" (click)="createLogEntry()"> add another entry </button>
+        <button type="submit"> save selections </button>
+    </form>
+</div>
+<h2> FoodLog Days </h2>
+<div *ngFor="let entry of foodLog$ | async">
+    {{ entry.date | date}} ---
+    <span *ngFor="let eat of entry.eats"> {{ eat.amount }} {{ eat.food.name }} - </span>
+</div>
+
