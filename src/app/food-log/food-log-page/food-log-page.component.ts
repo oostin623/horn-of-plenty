@@ -12,6 +12,9 @@ import { first, tap, find, map } from 'rxjs/operators';
   templateUrl: './food-log-page.component.html',
   styleUrls: ['./food-log-page.component.css']
 })
+/**
+ * View component for creating, editing, and reviewing food log entries.
+ */
 export class FoodLogPageComponent implements OnInit {
 
   foodLog$: Observable<FoodLogDay[]>;
@@ -23,7 +26,6 @@ export class FoodLogPageComponent implements OnInit {
 
   today: Date = new Date();
   selectedDate: Date = this.today;
-
 
   constructor(
     private foodLogService: FoodLogService,
@@ -37,13 +39,12 @@ export class FoodLogPageComponent implements OnInit {
     this.foodLog$ = this.foodLogService.foodLog$;
     // check if entries exist for today
     this.foodLogService.findLogDay(this.today)
-      .pipe(tap(logDay => console.log('todays log day: ', logDay)))
       .pipe(first())
       .subscribe(logDay => this.initializeForm(logDay));
   }
 
-  /** initialize form with todays values if found, else create an empty form. */
-  initializeForm(logDay?: FoodLogDay) {
+  /* initialize form with todays values if found, else create an empty form. */
+  private initializeForm(logDay?: FoodLogDay) {
     if (!!logDay) {
 
       const eatsFormGroups = logDay.eats.map(eat => this.fb.group({
@@ -58,6 +59,7 @@ export class FoodLogPageComponent implements OnInit {
         date: [logDay.date, Validators.required],
         eats: this.fb.array(eatsFormGroups, Validators.required),
       });
+
     } else {
       this.foodLogDayForm = this.fb.group({
         date: [this.selectedDate, Validators.required],
@@ -66,64 +68,34 @@ export class FoodLogPageComponent implements OnInit {
     }
   }
 
-  /** clear out form when switching to a day with no entries,
-   *  after the page has been initialized.
-   */
-  clearForm() {
-    this.foodLogDayForm.reset();
-    this.initializeForm();
-    this.foodLogDayForm.patchValue({
-      date: this.selectedDate,
-    });
+  /* reactive form bindings normally compare objects by address, so a custom comparison method
+    is required for the food select input in order to set default selections when an
+    existing log day is loaded */
+  compareFoodOptions(option1: Food, option2: Food) {
+    return option1 && option2 ? option1.name === option2.name : option1 === option2;
   }
 
-  /** clear out form and populate with a diffrent log day. */
-  switchLogDay(entry: FoodLogDay) {
-    /*if(entry.eats.length < this.eats.length) {
-      this.eats.controls.splice(entry.eats.length)
-        .map((control, index) => this.eats.removeAt(index));
-    }*/
-
-    this.foodLogDayForm.reset(entry);
-    // populate the extra controls when switching from a day wtih less to one with more
-    this.eats.controls
-      .map((control, index) => { if (!control.value) { this.eats.removeAt(index); } });
-    // remove the extra controls when switching from a day with more to one with less
-    // TODO: fix this method
-    /* this.eats.controls.splice(entry.eats.length)
-      .map((control, index) => this.eats.removeAt(index)); */
+  /* populated form arrays don't like having their parent form reset.
+     remove all controls from the array before resetting. */
+  private emptyEatsFormArray(): void {
+    while(this.eats.length) {
+      this.eats.removeAt(this.eats.length - 1);
+    }
   }
 
-
-  navagateToToday() {
+  onNavagateToToday() {
     this.selectedDate = this.today;
     this.foodLogService.findLogDay(this.selectedDate)
       .pipe(first())
       .subscribe(day => this.switchLogDay(day));
   }
 
-  createLogEntry(): void {
+  onCreateLogEntry(): void {
     this.eats.push(this.defaultEat);
   }
 
-  deleteLogEntry(i: number) {
+  onDeleteLogEntry(i: number) {
     this.eats.removeAt(i);
-  }
-
-  onSelectFood(foodOption: Food, i: number) {
-    console.log('now selecting food ', foodOption, ' for row ', i);
-    this.eats.controls[i].patchValue({
-      time: this.eats.get(i).value.time,
-      food: foodOption
-    });
-  }
-
-  compareFoodOptions(option1: Food, option2: Food) {
-    return option1 && option2 ? option1.name === option2.name : option1 === option2;
-  }
-
-  selectInitialFood(index: number): Food {
-    return (this.eats.controls[index].value as Eat).food;
   }
 
   onSubmit(): void {
@@ -137,7 +109,7 @@ export class FoodLogPageComponent implements OnInit {
     }
   }
 
-  changeLogDate(): void {
+  onChangeLogDate(): void {
     this.foodLogService.findLogDay(this.selectedDate)
       .pipe(first())
       .subscribe(entry => !!entry
@@ -145,7 +117,29 @@ export class FoodLogPageComponent implements OnInit {
         : this.clearForm());
   }
 
-  /*******************************************************************************************************************/
+  /* clear out form and populate with a diffrent log day. */
+  private switchLogDay(entry: FoodLogDay) {
+    this.emptyEatsFormArray();
+    entry.eats.map(eat => this.eats.push(this.fb.group({
+      time: eat.time,
+      food: eat.food,
+      amount: eat.amount,
+      type: eat.type,
+      meal: eat.meal,
+    })));
+    this.foodLogDayForm.setValue(entry);
+  }
+
+  /* clear out form when switching to a day with no entries, after the page has been initialized. */
+  private clearForm() {
+    this.foodLogDayForm.reset();
+    this.initializeForm();
+    this.foodLogDayForm.patchValue({
+      date: this.selectedDate,
+    });
+  }
+
+  /************************************************************************************************/
 
   get selectedDateInput() {
     const displayDate = new Date(this.selectedDate);
@@ -161,7 +155,7 @@ export class FoodLogPageComponent implements OnInit {
     this.selectedDate = displayDate;
   }
 
-  /*******************************************************************************************************************/
+  /************************************************************************************************/
 
   get defaultEat(): FormGroup {
     return this.fb.group({
@@ -173,7 +167,7 @@ export class FoodLogPageComponent implements OnInit {
     });
   }
 
-  /*******************************************************************************************************************/
+  /************************************************************************************************/
 
   get foodLogDay(): FormGroup { return this.foodLogDayForm as FormGroup; }
 

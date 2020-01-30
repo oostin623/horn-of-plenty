@@ -3,13 +3,13 @@
     <h2> Food log for: {{ logDateValue | date }}</h2>
     <!-- return to today -->
     <div *ngIf="selectedDate !== today">
-        <button (click)="navagateToToday()"> back to today </button>
+        <button (click)="onNavagateToToday()"> back to today </button>
     </div>
     <!-- date switcher -->
     <label> change date: 
         <input type="date" 
             [(ngModel)]="selectedDateInput"
-            (change)="changeLogDate()">
+            (change)="onChangeLogDate()">
     </label>
     <!-- food log -->
     <form [formGroup]="foodLogDay" (ngSubmit)="onSubmit()">    
@@ -43,7 +43,7 @@
                 <td>{{ row.value.food?.macros?.c * row.value.amount}}</td>
                 <td>{{ row.value.food?.macros?.p * row.value.amount}}</td>
                 <td>{{ row.value.food?.sugar * row.value.amount}}</td>
-                <td> <button type="button" (click)="deleteLogEntry(i)"> delete </button></td>
+                <td> <button type="button" (click)="onDeleteLogEntry(i)"> delete </button></td>
             </tr>
             <!-- totals -->
             <tr>
@@ -72,10 +72,11 @@
                 <td>{{ totalSugar }}</td> 
             </tr>
         </table>
-        <button type="button" (click)="createLogEntry()"> add another entry </button>
+        <button type="button" (click)="onCreateLogEntry()"> add another entry </button>
         <button type="submit"> save selections </button>
     </form>
 </div>
+
 <h2> FoodLog Days </h2>
 <div *ngFor="let entry of foodLog$ | async">
     {{ entry.date | date}} ---
